@@ -7,14 +7,6 @@ import sqlite3
 with open("modifiers.json", "r") as f:
     modifiers = json.load(f)
 
-def load_food_data():
-    conn = sqlite3.connect("foods.db")
-    df = pd.read_sql_query("SELECT * FROM food_info", conn)
-    conn.close()
-    return df
-
-df = load_food_data()
-
 def normalize_text(text):
     text = text.lower()
     text = re.sub(r'[^\w\s]', ' ', text)
@@ -62,7 +54,7 @@ def remove_modifier_phrases(text, matched_modifiers):
         text = re.sub(pattern, ' ', text)
     return normalize_text(text)
 
-def get_best_matching_food(user_input):
+def get_best_matching_food(user_input, df):
     normalized_input = normalize_text(user_input)
     input_tokens = set(normalized_input.split())
     choices = df['name'].tolist()
@@ -88,7 +80,7 @@ def get_best_matching_food(user_input):
 
     return None
 
-def get_food_data(food_name):
+def get_food_data(food_name, df):
     matches = df[df['name'].str.lower() == food_name.lower()]
     if not matches.empty:
         return matches.iloc[0]
@@ -105,19 +97,24 @@ def apply_modifiers(food_data, matched_modifiers):
         modified_data[key] *= factor
     return modified_data
 
-def calculate_final_nutrition(user_input):
+def calculate_final_nutrition(user_input, db_path="foods.db"):
+    conn = None
+    try:
+        conn = sqlite3.connect(db_path)
+        df = pd.read_sql_query("SELECT * FROM food_info", conn)
+    except sqlite3.Error as e:
+        return f"Database connection failed: {e}", []
+    finally:
+        if conn:
+            conn.close()
+
     matched_modifiers = extract_modifiers_from_text(user_input)
     cleaned_input = remove_modifier_phrases(user_input, matched_modifiers)
-    food_name = get_best_matching_food(cleaned_input)
+    food_name = get_best_matching_food(cleaned_input, df)
 
     if food_name:
-        food_data = get_food_data(food_name)
+        food_data = get_food_data(food_name, df)
         if food_data is not None:
             return apply_modifiers(food_data, matched_modifiers), [mod["description"] for mod in matched_modifiers]
         return f"Food item '{food_name}' not found in the database.", []
     return f"Food item '{cleaned_input}' not found in the database.", []
-
-user_input = "nachos"
-result, matched_mods = calculate_final_nutrition(user_input)
-print("Final Nutrition Data:\n", result)
-print("Modifiers used:", matched_mods)
