@@ -1,4 +1,4 @@
-# Nutri-Vision AI: An End-to-End Food Nutrients Estimator Project 🍽️
+# Nutri-Vision AI: An End-to-End Food Nutrients Estimator Project 
 
 This project is a deep learning-powered food recognition system that identifies popular Indian food items from an image (and customizes them using optional text) and provides an estimate of their nutritional content. The entire pipeline, from data collection and preprocessing to model training and deployment, is detailed below.
 
@@ -138,19 +138,19 @@ After resolving the data issues, I retrained the model using the proper workflow
 
 ---
 
-## NLP-Powered Nutrient Estimation 🥑📝
+## NLP-Powered Nutrient Estimation 
 
-The project's key innovation lies in its multimodal approach, combining computer vision for food recognition with Natural Language Processing (NLP) for a richer, more accurate nutritional analysis. While the deep learning model identifies the food item from an image, the NLP pipeline processes optional text inputs to refine the prediction and calculate specific nutrient values.
+The project's key innovation lies in its multimodal approach, combining computer vision for food recognition with Natural Language Processing (NLP) for a richer, more accurate nutritional analysis. While the deep learning model identifies the food item from an image, the NLP pipeline processes optional text inputs to refine the prediction and calculate specific nutrient values. These modifiers will then be applied to the output retrieved from a custom nutrient database for a more personalised and relevant nutrient estimation.
 
 ### The NLP Pipeline:
 
 1.  **Text Input Processing:** The user's text input—which might include the food name, portion size (e.g., "half a cup"), or preparation details (e.g., "biryani with extra rice")—is tokenized and preprocessed. This involves converting text into a structured, machine-readable format.
 2.  **Entity Recognition and Extraction:** The NLP model, typically a custom-trained named-entity recognition (NER) model, identifies key entities. It extracts:
     * **Food Items:** Matches the user's text to a known food item or category.
-    * **Quantity/Unit:** Recognizes measurements like "grams," "cups," or "slices."
+    * **Quantity/Unit:** Recognizes portion sizes like small, standard/medium or large serving.
     * **Descriptors:** Captures words that modify the food item, such as "fried," "grilled," or "extra."
 3.  **Nutrient Database Lookup:** The extracted entities are used to query a comprehensive nutritional database. The system retrieves standard nutritional information for the identified food, adjusted for the specified quantity. For example, if the model identifies "one cup of rice," it queries the database for the nutritional value of that specific portion.
-4.  **Customization and Calculation:** This is where the true power of the NLP-Vision integration is realized. The system uses the text descriptors to customize the nutritional estimate. For instance, if the image-based prediction is "biryani," and the user adds the text "with extra rice," the system uses NLP to increase the carbohydrate and calorie count from its standard biryani estimate. If a user inputs "mutter paneer, medium size", the system can provide an estimate that is proportional to a standard serving size.
+4.  **Customization and Calculation:** This is where the true power of the NLP-Vision integration is realized. The system uses the text descriptors to customize the nutritional estimate. For instance, if the image-based prediction is "pizza," and the user adds the text "homemade wheat with extra cheese" the system uses NLP to calculate the effect of all these modifiers on the nutritional content of the food. If a user inputs "mutter paneer, large size", the system can provide an estimate that is proportional to a large serving size.
 5.  **Final Output Generation:** The NLP-refined nutritional data is then presented to the user, providing a more personalized and accurate estimate than a simple image-based recognition system could provide alone.
 
 This integration of NLP transforms the project from a simple food classifier into an intelligent nutrient estimator. It empowers the user to provide context and customization, leading to a much more accurate and helpful application.
